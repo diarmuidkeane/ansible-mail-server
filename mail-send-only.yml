@@ -1,10 +1,11 @@
 ---
 - hosts: all
 
-  vars:
-    admin_email: <<certbot admin email here>> 
-
   tasks:
+  - name: "check that certbot admin email is defined"
+    fail: msg="certbot admin email needs to be defined"
+    when: admin_email is not defined
+
   - name: "update package manager"
     apt: update_cache=yes
 
