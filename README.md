@@ -1,7 +1,7 @@
 # ubuntu-mail-server
 
 ### overview
-ansible script to build a send only mail server based on this [ recipe provided by digital ocean ] (https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-postfix-as-a-send-only-smtp-server-on-ubuntu-18-04 ) 
+ansible script to build a send only mail server based on this [recipe provided by digital ocean](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-postfix-as-a-send-only-smtp-server-on-ubuntu-18-04) 
 
 ### steps
 
