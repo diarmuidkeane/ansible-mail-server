@@ -1,0 +1,64 @@
+---
+- hosts: all
+
+  vars:
+    admin_email: <<certbot admin email here>> 
+
+  tasks:
+  - name: "update package manager"
+    apt: update_cache=yes
+
+  - name: "preconfigure interactive settings for postfix: mailname"
+    debconf: name=postfix question=postfix/mailname vtype=string value="{{ inventory_hostname }}"
+
+  - name: "preconfigure interactive settings for postfix"
+    debconf: name=postfix question=postfix/main_mailer_type vtype=string value='Internet Site'
+
+  - name: "install mailutils"
+    apt: name=mailutils state=present
+ 
+  - name: "postfix configuration: inet interfaces"
+    lineinfile:
+      path: /etc/postfix/main.cf
+      regexp: '^inet_interfaces'
+      line: inet_interfaces = loopback-only
+ 
+  - name: "postfix configuration: mydestination"
+    lineinfile:
+      path: /etc/postfix/main.cf
+      regexp: '^mydestination'
+      line: mydestination = localhost.$mydomain, localhost, $myhostname
+ 
+  - name: "install certbot"
+    apt: name=certbot state=present
+ 
+  - name: "open firewall at port 80"
+    ufw: 
+      rule: allow
+      port: '80'
+ 
+  - name: "obtain or renew certificate"
+    shell: "certbot certonly -n --keep-until-expiring --standalone --rsa-key-size 4096 --email {{ admin_email }} --agree-tos --preferred-challenges http -d {{ inventory_hostname }}"
+ 
+  - name: "close firewall at port 80"
+    ufw: 
+      rule: deny
+      port: '80'
+
+  - name: "postfix configuration: mydestination"
+    lineinfile:
+      path: /etc/postfix/main.cf
+      regexp: '^smtpd_tls_cert_file'
+      line: "smtpd_tls_cert_file=/etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem"
+ 
+  - name: "postfix configuration: mydestination"
+    lineinfile:
+      path: /etc/postfix/main.cf
+      regexp: '^smtpd_tls_key_file'
+      line: "smtpd_tls_key_file=/etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem"
+
+  - name: restart postfix service
+    service:
+      name: postfix
+      state: restarted 
+ 
