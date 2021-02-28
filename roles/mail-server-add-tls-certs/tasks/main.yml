@@ -1,0 +1,14 @@
+- name: "postfix configuration: mydestination"
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^smtpd_tls_cert_file'
+    line: "smtpd_tls_cert_file=/etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem"
+  notify: restart postfix
+
+- name: "postfix configuration: mydestination"
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^smtpd_tls_key_file'
+    line: "smtpd_tls_key_file=/etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem"
+  notify: restart postfix
+

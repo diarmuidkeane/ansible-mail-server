@@ -1,0 +1,8 @@
+- name: set email alias for root user
+  lineinfile:
+    path: /etc/aliases
+    state: present
+    regexp: '^root:'
+    line: "root: {{ root_email_alias }}"
+    insertafter: EOF
+  notify: new aliases

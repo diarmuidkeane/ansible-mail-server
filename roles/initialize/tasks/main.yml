@@ -1,0 +1,10 @@
+- name: "open firewall at port 22 for ssh"
+  ufw:
+    state: enabled
+    rule: allow
+    port: '22'
+
+- name: "update package manager"
+  apt:
+    update_cache: yes
+

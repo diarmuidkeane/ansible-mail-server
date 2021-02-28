@@ -2,7 +2,7 @@
 - hosts: all
 
   pre_tasks:
-  - name: "check that certbot admin email is provided"
+  - name: "check that certbot admin email is defined"
     fail:
       msg: "certbot admin email needs to be defined"
     when: admin_email is not defined
@@ -12,10 +12,16 @@
       msg: "root email alias needs to be defined"
     when: root_email_alias is not defined
 
+  - name: "check that forwarding email is defined"
+    fail:
+      msg: "forwarding email needs to be defined"
+    when: forwarding_email is not defined
+
   roles:
     - initialize
     - mail-server
-    - mail-server-internal-only
     - mail-alias-root-user
     - create-tls-certs
     - mail-server-add-tls-certs
+    - mail-forwarding
+

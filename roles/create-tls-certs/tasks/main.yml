@@ -1,0 +1,17 @@
+- name: "install certbot"
+  apt:
+    name: certbot
+    state: present
+
+- name: "open firewall at port 80"
+  ufw:
+    rule: allow
+    port: '80'
+
+- name: "obtain or renew certificate"
+  shell: "certbot certonly -n --keep-until-expiring --standalone --rsa-key-size 4096 --email {{ admin_email }} --agree-tos --preferred-challenges http -d {{ inventory_hostname }}"
+
+- name: "close firewall at port 80"
+  ufw:
+    rule: deny
+    port: '80'

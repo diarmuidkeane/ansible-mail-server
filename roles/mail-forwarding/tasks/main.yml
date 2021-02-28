@@ -1,0 +1,31 @@
+- name: allow external access to smtp
+  ufw:
+    rule: allow
+    port: '25'
+
+- name: virtual aliases file
+  lineinfile:
+    path: /etc/postfix/virtual
+    state: present
+    line: "@{{ inventory_hostname }} {{ forwarding_email }}"
+    create: true
+
+- name: configure postfix for virtual alias domains
+  lineinfile:
+    path: /etc/postfix/main.cf
+    state: present
+    line: "virtual_alias_domains = $mydomain"
+    insertafter: EOF
+  notify: reload postfix
+
+- name: configure postfix for virtual alias maps
+  lineinfile:
+    path: /etc/postfix/main.cf
+    state: present
+    line: "virtual_alias_maps = hash:/etc/postfix/virtual"
+    insertafter: EOF
+  notify: reload postfix
+
+- name: load virtual alias configuration
+  shell: postmap /etc/postfix/virtual
+  notify: reload postfix

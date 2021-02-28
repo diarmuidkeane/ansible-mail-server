@@ -1,0 +1,12 @@
+- name: "postfix configuration: inet interfaces"
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^inet_interfaces'
+    line: inet_interfaces = loopback-only
+  notify: restart postfix
+
+- name: remove external access to smtp
+  ufw:
+    rule: allow
+    port: '25'
+    delete: true
